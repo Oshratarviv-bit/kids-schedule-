@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לוז המשחקים שלנו</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:#F0EEFF;color:#222;min-height:100vh;display:flex;align-items:flex-start;justify-content:center}
+.wrap{width:100%;max-width:680px;padding:1.5rem 1rem}
+#auth-screen{display:flex;flex-direction:column;align-items:center;padding-top:2rem}
+.auth-logo{font-family:'Fredoka One',cursive;font-size:30px;color:#7F77DD;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.auth-sub{font-size:13px;color:#aaa;margin-bottom:2rem}
+.auth-card{background:#fff;border-radius:18px;padding:1.75rem;width:100%;max-width:400px;box-shadow:0 4px 20px rgba(127,119,221,.12)}
+.auth-tabs{display:flex;background:#F0EEFF;border-radius:10px;padding:3px;gap:3px;margin-bottom:1.25rem}
+.auth-tab{flex:1;padding:8px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:#aaa;border-radius:8px;transition:all .15s}
+.auth-tab.active{background:#7F77DD;color:#fff}
+.auth-panel{display:none}.auth-panel.active{display:block}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field label{font-size:12px;font-weight:700;color:#999}
+.field input{font-family:'Nunito',sans-serif;font-size:14px;background:#F8F7FF;border:1.5px solid #e8e4ff;border-radius:9px;padding:9px 12px;color:#333;outline:none;direction:rtl}
+.field input:focus{border-color:#7F77DD}
+.role-pick{display:flex;gap:8px;margin-bottom:14px}
+.role-btn{flex:1;padding:10px 6px;border:2px solid #eee;border-radius:12px;background:#fff;cursor:pointer;text-align:center;font-family:'Nunito',sans-serif}
+.role-btn i{display:block;font-size:22px;margin-bottom:4px;color:#bbb}
+.role-btn span{font-size:11px;font-weight:700;color:#bbb;display:block}
+.role-btn.sel{border-color:#7F77DD;background:#F0EEFF}
+.role-btn.sel i,.role-btn.sel span{color:#7F77DD}
+.child-field{display:none;margin-bottom:12px}.child-field.show{display:block}
+.err{background:#FFF0F0;border:1px solid #ffcdd2;color:#c62828;font-size:12px;font-weight:600;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:none}
+.btn-full{width:100%;padding:11px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;background:#7F77DD;color:#fff;border:none;border-radius:10px;cursor:pointer}
+.btn-full:hover{background:#534AB7}
+#main-screen{display:none;width:100%}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding:10px 14px;background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(127,119,221,.08)}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:16px;flex-shrink:0}
+.av-parent{background:#EDE7F6;color:#7F77DD}.av-child{background:#E8F5E9;color:#2E7D32}.av-teen{background:#FFF3E0;color:#E65100}
+.topbar-name{font-weight:700;font-size:14px;color:#333}
+.topbar-role{font-size:11px;color:#bbb;font-weight:600}
+.topbar-btns{display:flex;gap:6px}
+.icon-btn{background:none;border:1px solid #eee;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:13px;font-weight:600;color:#bbb;font-family:'Nunito',sans-serif;display:flex;align-items:center;gap:4px}
+.icon-btn:hover{background:#fafafa}
+.viewing-as{background:#EDE7F6;border-radius:10px;padding:9px 14px;margin-bottom:1rem;font-size:13px;color:#5E35B1;font-weight:700;display:none;align-items:center;gap:8px}
+.tabs{display:flex;background:#fff;border-radius:12px;padding:4px;gap:4px;margin-bottom:1.25rem;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.tab{flex:1;padding:9px 6px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:#aaa;border-radius:9px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.tab.active{background:#7F77DD;color:#fff;box-shadow:0 2px 8px rgba(127,119,221,.35)}
+.panel{display:none}.panel.active{display:block}
+.note-wrap{background:#FFFDE7;border:2px solid #F9A825;border-radius:14px;overflow:hidden;margin-bottom:.75rem;position:relative}
+.note-lines{position:absolute;top:0;left:0;right:0;bottom:0;background-image:repeating-linear-gradient(transparent,transparent 33px,#FFE082 33px,#FFE082 34px);opacity:.4;pointer-events:none}
+.note-area{width:100%;min-height:175px;background:transparent;border:none;outline:none;resize:vertical;font-family:'Nunito',sans-serif;font-size:15px;line-height:34px;padding:10px 16px;color:#4E342E;direction:rtl;position:relative;z-index:1}
+.note-area::placeholder{color:#BCAAA4}
+.note-hint{font-size:12px;color:#A1887F;padding:4px 16px 10px;position:relative;z-index:1}
+.btn-p{display:inline-flex;align-items:center;gap:6px;background:#7F77DD;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
+.btn-p:hover{background:#534AB7}
+.btn-o{display:inline-flex;align-items:center;gap:5px;background:#fff;color:#666;border:1.5px solid #e0e0e0;border-radius:10px;padding:9px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.arow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.readonly-notice{background:#FFF8E1;border:1px solid #FFE082;border-radius:10px;padding:9px 14px;font-size:12px;color:#F57F17;font-weight:700;margin-bottom:1rem;display:none;align-items:center;gap:6px}
+.pr{display:none;margin-top:1rem}
+.db{background:#fff;border:1px solid #eee;border-radius:12px;margin-bottom:9px;overflow:hidden}
+.dh{padding:10px 16px;font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;border-bottom:1px solid #f0f0f0;background:#fafafa}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.er{display:flex;align-items:center;padding:9px 16px;gap:10px;font-size:13px;border-bottom:1px solid #f5f5f5}
+.er:last-child{border-bottom:none}
+.etm{font-weight:700;color:#aaa;min-width:48px;text-align:left;direction:ltr;font-size:12px}
+.enm{flex:1;color:#333;font-weight:600}
+.ebadge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:700}
+.wh{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:6px}
+.wdl{text-align:center;font-size:11px;font-weight:700;color:#aaa}
+.wc{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.wcol{background:#fff;border-radius:10px;padding:5px 4px;min-height:80px;border:1px solid #f0f0f0}
+.we{font-size:10px;font-weight:700;padding:3px 4px;border-radius:5px;margin-bottom:3px;display:flex;align-items:center;gap:2px}
+.we.clickable{cursor:pointer}.we.clickable:hover{opacity:.75}
+.empty{text-align:center;padding:2.5rem 1rem;color:#ccc;font-size:14px}
+.crow{display:flex;gap:10px;margin-bottom:1rem}
+.cc{background:#fff;border-radius:10px;padding:10px 14px;flex:1;text-align:center;border:1px solid #f0f0f0}
+.cn{font-size:22px;font-weight:700;color:#333;font-family:'Fredoka One',cursive}
+.cl{font-size:11px;color:#aaa}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ff{display:flex;flex-direction:column;gap:4px}
+.ff.full{grid-column:span 2}
+.ff label{font-size:12px;font-weight:700;color:#999}
+.ff input,.ff select{font-family:'Nunito',sans-serif;font-size:14px;direction:rtl;background:#F8F7FF;border:1.5px solid #e8e4ff;border-radius:8px;padding:8px 10px;color:#333;outline:none}
+.sc{background:#fff;border:1px solid #eee;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.st{font-size:12px;font-weight:700;color:#bbb;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.child-switcher{background:#fff;border-radius:12px;padding:10px 14px;margin-bottom:1rem;border:1px solid #eee;display:none}
+.child-switcher-title{font-size:12px;font-weight:700;color:#bbb;margin-bottom:8px;text-transform:uppercase}
+.child-chips{display:flex;gap:7px;flex-wrap:wrap}
+.child-chip{padding:6px 14px;border-radius:20px;border:1.5px solid #e0e0e0;background:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:#aaa;cursor:pointer}
+.child-chip.active{border-color:#7F77DD;background:#EDE7F6;color:#7F77DD}
+
+/* MODAL */
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-bg.open{display:flex}
+.modal{background:#fff;border-radius:18px;padding:1.5rem;width:90%;max-width:380px;text-align:center}
+.modal h3{font-family:'Fredoka One',cursive;font-size:20px;color:#333;margin-bottom:8px}
+.modal p{font-size:13px;color:#aaa;margin-bottom:16px}
+.share-code{font-family:'Fredoka One',cursive;font-size:36px;color:#7F77DD;letter-spacing:6px;background:#F0EEFF;border-radius:12px;padding:12px 20px;margin-bottom:16px;display:block}
+.modal-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+
+/* SHARE VIEW */
+#share-screen{display:none;flex-direction:column;align-items:center;padding-top:2rem}
+.share-card{background:#fff;border-radius:18px;padding:1.75rem;width:100%;max-width:420px;box-shadow:0 4px 20px rgba(127,119,221,.12)}
+
+/* NOTIF TOAST */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:30px;font-size:14px;font-weight:600;z-index:200;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.toast.show{display:flex}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-logo"><i class="ti ti-mood-smile"></i> לוז המשחקים שלנו</div>
+  <div class="auth-sub">לנהל את הפעילויות של הילדים בקלות</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="authTab('login')" id="atab-login">כניסה</button>
+      <button class="auth-tab" onclick="authTab('register')" id="atab-register">הרשמה</button>
+    </div>
+    <div class="auth-panel active" id="apanel-login">
+      <div class="err" id="login-err"></div>
+      <div class="field"><label>שם משתמש</label><input type="text" id="l-user" placeholder="השם שלך" /></div>
+      <div class="field"><label>סיסמה</label><input type="password" id="l-pass" placeholder="••••••" /></div>
+      <button class="btn-full" onclick="doLogin()">כניסה</button>
+    </div>
+    <div class="auth-panel" id="apanel-register">
+      <div class="err" id="reg-err"></div>
+      <div class="field"><label>שם משתמש</label><input type="text" id="r-user" placeholder="בחר שם" /></div>
+      <div class="field"><label>סיסמה</label><input type="password" id="r-pass" placeholder="בחר סיסמה" /></div>
+      <div style="font-size:12px;font-weight:700;color:#999;margin-bottom:8px">תפקיד</div>
+      <div class="role-pick">
+        <div class="role-btn" onclick="pickRole('child')" id="role-child"><i class="ti ti-mood-kid"></i><span>ילד</span></div>
+        <div class="role-btn" onclick="pickRole('teen')" id="role-teen"><i class="ti ti-user"></i><span>נוער</span></div>
+        <div class="role-btn sel" onclick="pickRole('parent')" id="role-parent"><i class="ti ti-users"></i><span>הורה</span></div>
+      </div>
+      <div class="child-field show" id="child-field">
+        <div class="field"><label>שמות ילדיך (מופרד בפסיק)</label><input type="text" id="r-children" placeholder="יואב, נועה, רם" /></div>
+      </div>
+      <button class="btn-full" onclick="doRegister()">הרשמה</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE VIEW (when opening a share link) -->
+<div id="share-screen">
+  <div class="auth-logo"><i class="ti ti-share"></i> לוז משותף</div>
+  <div class="share-card">
+    <div id="share-content"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="avatar" id="av"></div>
+      <div><div class="topbar-name" id="top-name"></div><div class="topbar-role" id="top-role"></div></div>
+    </div>
+    <div class="topbar-btns">
+      <button class="icon-btn" id="share-btn" onclick="openShareModal()" style="display:none"><i class="ti ti-share"></i> שתף</button>
+      <button class="icon-btn" onclick="doLogout()"><i class="ti ti-logout"></i> יציאה</button>
+    </div>
+  </div>
+  <div class="viewing-as" id="viewing-banner"><i class="ti ti-eye"></i><span id="viewing-text"></span></div>
+  <div class="child-switcher" id="child-switcher">
+    <div class="child-switcher-title">בחר ילד</div>
+    <div class="child-chips" id="child-chips"></div>
+  </div>
+  <div class="readonly-notice" id="readonly-notice"><i class="ti ti-lock"></i> מצב צפייה בלבד — ההורה שולט בלוז</div>
+  <div class="tabs" id="main-tabs">
+    <button class="tab active" onclick="go('week')" id="tab-week"><i class="ti ti-calendar-week"></i> שבוע</button>
+    <button class="tab" onclick="go('add')" id="tab-add"><i class="ti ti-plus"></i> הוסף</button>
+    <button class="tab" onclick="go('note')" id="tab-note"><i class="ti ti-notes"></i> פתק חופשי</button>
+  </div>
+  <div class="panel active" id="panel-week">
+    <div class="crow" id="ctr"></div>
+    <div class="wh" id="whl"></div>
+    <div class="wc" id="wcols"></div>
+    <div id="evlist"></div>
+  </div>
+  <div class="panel" id="panel-add">
+    <div class="sc">
+      <div class="st">פרטי פעילות</div>
+      <div class="fg">
+        <div class="ff full"><label>שם הפעילות</label><input type="text" id="fn" placeholder="כדורגל, שחייה, יום הולדת..." /></div>
+        <div class="ff"><label>יום</label><select id="fd"><option value="0">ראשון</option><option value="1">שני</option><option value="2">שלישי</option><option value="3">רביעי</option><option value="4">חמישי</option><option value="5">שישי</option><option value="6">שבת</option></select></div>
+        <div class="ff"><label>שעה</label><input type="time" id="ft" value="16:00" /></div>
+        <div class="ff"><label>ילד/ה</label><input type="text" id="fc" placeholder="שם" /></div>
+        <div class="ff"><label>סוג</label><select id="ftp"><option value="sport">ספורט</option><option value="party">מסיבה / יום הולדת</option><option value="hobby">חוג</option><option value="playdate">פלייד-דייט</option><option value="other">אחר</option></select></div>
+      </div>
+      <div class="arow">
+        <button class="btn-p" onclick="addEv()"><i class="ti ti-plus"></i> הוסף</button>
+        <button class="btn-o" onclick="clrForm()"><i class="ti ti-refresh"></i> נקה</button>
+      </div>
+    </div>
+  </div>
+  <div class="panel" id="panel-note">
+    <div class="note-wrap">
+      <div class="note-lines"></div>
+      <textarea class="note-area" id="ni" placeholder="כתוב כאן כמו פתק...&#10;&#10;ראשון 16:00 כדורגל&#10;שני שחייה 17:00&#10;שלישי חוג ציור 15:30&#10;שישי יום הולדת 18:00 - רם"></textarea>
+      <div class="note-hint">כתוב חופשי — ימים, שעות, שמות. הכל בסדר.</div>
+    </div>
+    <div class="arow">
+      <button class="btn-p" onclick="parseIt()"><i class="ti ti-wand"></i> סדר את הלוז</button>
+      <button class="btn-o" onclick="clrNote()"><i class="ti ti-trash"></i> נקה</button>
+    </div>
+    <div class="pr" id="pr"></div>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div class="modal-bg" id="share-modal">
+  <div class="modal">
+    <h3><i class="ti ti-share" style="color:#7F77DD"></i> שתף לוז</h3>
+    <p>שלח את הקוד לחבר — הוא יכניס אותו באפליקציה ויראה את הלוז</p>
+    <span class="share-code" id="share-code-display">...</span>
+    <div class="modal-btns">
+      <button class="btn-p" onclick="copyShareLink()"><i class="ti ti-copy"></i> העתק קישור</button>
+      <button class="btn-p" style="background:#25D366" onclick="shareWhatsapp()"><i class="ti ti-brand-whatsapp"></i> וואטסאפ</button>
+      <button class="btn-o" onclick="closeModal()">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADOPT MODAL -->
+<div class="modal-bg" id="adopt-modal">
+  <div class="modal">
+    <h3>🗓️ <span id="adopt-title"></span></h3>
+    <p id="adopt-desc"></p>
+    <div id="adopt-preview" style="margin-bottom:16px;max-height:200px;overflow-y:auto"></div>
+    <div class="modal-btns">
+      <button class="btn-p" onclick="adoptSchedule()"><i class="ti ti-check"></i> אני בטוח — החלף לוז</button>
+      <button class="btn-o" onclick="closeAdopt()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="ti ti-bell"></i><span id="toast-msg"></span></div>
+
+<script>
+const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const ROLE_HE={parent:'הורה',child:'ילד',teen:'נוער'};
+const T={
+  sport:{label:'ספורט',icon:'ti-ball-football',bg:'#E8F5E9',col:'#2E7D32',dot:'#4CAF50'},
+  party:{label:'מסיבה',icon:'ti-confetti',bg:'#FFF8E1',col:'#F57F17',dot:'#FFC107'},
+  hobby:{label:'חוג',icon:'ti-palette',bg:'#EDE7F6',col:'#4527A0',dot:'#7E57C2'},
+  playdate:{label:'פלייד-דייט',icon:'ti-friends',bg:'#FCE4EC',col:'#880E4F',dot:'#EC407A'},
+  other:{label:'אחר',icon:'ti-star',bg:'#F3E5F5',col:'#6A1B9A',dot:'#AB47BC'}
+};
+let currentUser=null,viewingChild=null,nid=Date.now();
+let selectedRole='parent';
+let currentShareCode=null;
+let pendingAdoptEvents=null;
+let notifInterval=null;
+let notifiedKeys=new Set();
+
+// ── CHECK FOR SHARE CODE IN URL ──
+window.addEventListener('load',()=>{
+  const params=new URLSearchParams(window.location.search);
+  const code=params.get('share');
+  if(code) loadSharedSchedule(code);
+});
+
+async function loadSharedSchedule(code){
+  const res=await fetch('/api/share/'+code);
+  const data=await res.json();
+  if(!data.ok){showToast('קישור לא תקין');return;}
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('share-screen').style.display='flex';
+  const bd=DAYS.map((d,i)=>({d,de:data.events.filter(e=>e.day===i).sort((a,b)=>a.time.localeCompare(b.time))})).filter(x=>x.de.length);
+  document.getElementById('share-content').innerHTML=`
+    <div style="text-align:center;margin-bottom:1rem">
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;color:#333;margin-bottom:4px">הלוז של ${data.ownerName}</div>
+      <div style="font-size:13px;color:#aaa">${data.events.length} פעילויות</div>
+    </div>
+    ${bd.map(({d,de})=>`<div class="db"><div class="dh"><div class="dot" style="background:${T[de[0].type].dot}"></div><span>${d}</span></div>${de.map(e=>{const t=T[e.type];return`<div class="er"><span class="etm">${e.time}</span><i class="ti ${t.icon}" style="font-size:14px;color:#ccc"></i><span class="enm">${e.name}</span><span class="ebadge" style="background:${t.bg};color:${t.col}">${t.label}</span></div>`;}).join('')}</div>`).join('')}
+    <div style="margin-top:1rem;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+      <button class="btn-p" onclick="showAdoptModal('${code}','${data.ownerName}')"><i class="ti ti-replace"></i> אמץ לוז זה</button>
+      <button class="btn-o" onclick="window.location='/'">חזור לכניסה</button>
+    </div>`;
+  pendingAdoptEvents=data.events;
+}
+
+function showAdoptModal(code,name){
+  document.getElementById('adopt-title').textContent='החלפת לוז';
+  document.getElementById('adopt-desc').textContent=`האם אתה בטוח שאתה רוצה להחליף את הלוז שלך בלוז של ${name}? הלוז הנוכחי שלך יימחק.`;
+  document.getElementById('adopt-modal').classList.add('open');
+}
+function closeAdopt(){document.getElementById('adopt-modal').classList.remove('open');}
+async function adoptSchedule(){
+  if(!pendingAdoptEvents||!currentUser){
+    // not logged in — go to login first
+    closeAdopt();
+    window.location='/';
+    return;
+  }
+  await setEvs(pendingAdoptEvents);
+  closeAdopt();
+  showToast('✅ הלוז הוחלף בהצלחה!');
+  go('week');
+}
+
+// ── AUTH ──
+function authTab(t){
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.auth-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('atab-'+t).classList.add('active');
+  document.getElementById('apanel-'+t).classList.add('active');
+}
+function pickRole(r){
+  selectedRole=r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('role-'+r).classList.add('sel');
+  document.getElementById('child-field').className='child-field'+(r==='parent'?' show':'');
+}
+function showErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+function hideErr(id){document.getElementById(id).style.display='none';}
+
+async function doRegister(){
+  hideErr('reg-err');
+  const username=document.getElementById('r-user').value.trim();
+  const password=document.getElementById('r-pass').value.trim();
+  if(!username||!password){showErr('reg-err','נא למלא שם משתמש וסיסמה');return;}
+  let children=[];
+  if(selectedRole==='parent'){
+    const raw=document.getElementById('r-children').value.trim();
+    if(!raw){showErr('reg-err','נא להזין שמות ילדים');return;}
+    children=raw.split(',').map(s=>s.trim()).filter(Boolean);
+  }
+  const res=await fetch('/api/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,role:selectedRole,children})});
+  const data=await res.json();
+  if(!data.ok){showErr('reg-err',data.msg);return;}
+  loginAs(data.user);
+}
+
+async function doLogin(){
+  hideErr('login-err');
+  const username=document.getElementById('l-user').value.trim();
+  const password=document.getElementById('l-pass').value.trim();
+  const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password})});
+  const data=await res.json();
+  if(!data.ok){showErr('login-err',data.msg);return;}
+  loginAs(data.user);
+}
+
+function loginAs(user){
+  currentUser=user;
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('share-screen').style.display='none';
+  document.getElementById('main-screen').style.display='block';
+  const av=document.getElementById('av');
+  av.textContent=user.username[0].toUpperCase();
+  av.className='avatar av-'+(user.role==='parent'?'parent':user.role==='teen'?'teen':'child');
+  document.getElementById('top-name').textContent=user.username;
+  document.getElementById('top-role').textContent=ROLE_HE[user.role];
+  const canEdit=user.role==='parent'||user.role==='teen';
+  document.getElementById('share-btn').style.display=canEdit?'flex':'none';
+  const cs=document.getElementById('child-switcher');
+  const rn=document.getElementById('readonly-notice');
+  const vb=document.getElementById('viewing-banner');
+  const tabs=document.getElementById('main-tabs');
+  if(user.role==='parent'&&user.children&&user.children.length>0){
+    cs.style.display='block';
+    document.getElementById('child-chips').innerHTML=user.children.map((c,i)=>`<button class="child-chip${i===0?' active':''}" onclick="switchChild('${c}')">${c}</button>`).join('');
+    viewingChild=user.children[0];
+    vb.style.display='flex';
+    document.getElementById('viewing-text').textContent='מציג לוז של: '+viewingChild;
+    rn.style.display='none';
+    tabs.style.display='flex';
+  } else {
+    cs.style.display='none';
+    viewingChild=null;
+    if(user.role==='child'){rn.style.display='flex';tabs.style.display='none';}
+    else{rn.style.display='none';tabs.style.display='flex';}
+    vb.style.display='none';
+  }
+  startNotifCheck();
+  go('week');
+}
+
+function switchChild(name){
+  viewingChild=name;
+  document.querySelectorAll('.child-chip').forEach(c=>c.classList.toggle('active',c.textContent===name));
+  document.getElementById('viewing-text').textContent='מציג לוז של: '+name;
+  go('week');
+}
+
+function doLogout(){
+  clearInterval(notifInterval);
+  currentUser=null;viewingChild=null;
+  document.getElementById('main-screen').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  ['l-user','l-pass','r-user','r-pass','r-children'].forEach(id=>document.getElementById(id).value='');
+}
+
+function schedKey(){
+  if(currentUser.role==='parent'&&viewingChild)return'child_'+viewingChild;
+  if(currentUser.role==='child'||currentUser.role==='teen')return'child_'+currentUser.username;
+  return currentUser.username;
+}
+async function getEvs(){const res=await fetch('/api/schedule/'+schedKey());return await res.json();}
+async function setEvs(arr){await fetch('/api/schedule/'+schedKey(),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(arr)});}
+
+function go(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const tb=document.getElementById('tab-'+t);if(tb)tb.classList.add('active');
+  document.getElementById('panel-'+t).classList.add('active');
+  if(t==='week')renderWeek();
+}
+
+async function renderWeek(){
+  const evs=await getEvs();
+  const canEdit=currentUser.role==='parent'||currentUser.role==='teen';
+  document.getElementById('whl').innerHTML=DAYS.map(d=>`<div class="wdl">${d}</div>`).join('');
+  document.getElementById('wcols').innerHTML=DAYS.map((_,i)=>{
+    const de=evs.filter(e=>e.day===i).sort((a,b)=>a.time.localeCompare(b.time));
+    return`<div class="wcol">${de.length?de.map(e=>{const t=T[e.type];return`<div class="we${canEdit?' clickable':''}" style="background:${t.bg};color:${t.col}"${canEdit?` onclick="rmEv(${e.id})" title="לחץ להסרה"`:''}>
+      <i class="ti ${t.icon}" style="font-size:10px;flex-shrink:0"></i>
+      <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name}</span></div>`;}).join(''):`<div style="text-align:center;color:#ddd;font-size:10px;padding-top:8px">—</div>`}</div>`;
+  }).join('');
+  const ch=[...new Set(evs.map(e=>e.child).filter(Boolean))];
+  document.getElementById('ctr').innerHTML=`<div class="cc"><div class="cn">${evs.length}</div><div class="cl">פעילויות</div></div><div class="cc"><div class="cn">${ch.length||'—'}</div><div class="cl">ילדים</div></div>`;
+  const el=document.getElementById('evlist');
+  if(!evs.length){el.innerHTML=`<div class="empty" style="margin-top:1rem"><i class="ti ti-calendar-off" style="font-size:28px;display:block;margin-bottom:8px"></i>עדיין אין פעילויות</div>`;return;}
+  const bd=DAYS.map((d,i)=>({d,de:evs.filter(e=>e.day===i).sort((a,b)=>a.time.localeCompare(b.time))})).filter(x=>x.de.length);
+  el.innerHTML=`<div style="margin-top:1rem">`+bd.map(({d,de})=>`<div class="db"><div class="dh"><div class="dot" style="background:${T[de[0].type].dot}"></div><span>${d}</span><span style="font-size:12px;color:#ccc;font-weight:400;margin-right:auto">${de.length} פעילות</span></div>${de.map(e=>{const t=T[e.type];return`<div class="er"><span class="etm">${e.time}</span><i class="ti ${t.icon}" style="font-size:14px;color:#ccc"></i><span class="enm">${e.name}${e.child?` <span style="color:#ccc;font-weight:400">(${e.child})</span>`:''}</span><span class="ebadge" style="background:${t.bg};color:${t.col}">${t.label}</span>${canEdit?`<button onclick="rmEv(${e.id})" style="background:none;border:none;cursor:pointer;color:#ddd;font-size:13px;padding:2px 4px;border-radius:4px"><i class="ti ti-x"></i></button>`:''}</div>`;}).join('')}</div>`).join('')+`</div>`;
+}
+
+async function addEv(){
+  if(currentUser.role==='child')return;
+  const n=document.getElementById('fn').value.trim();
+  if(!n){document.getElementById('fn').focus();return;}
+  const evs=await getEvs();
+  evs.push({id:nid++,name:n,day:parseInt(document.getElementById('fd').value),time:document.getElementById('ft').value,child:document.getElementById('fc').value.trim(),type:document.getElementById('ftp').value});
+  await setEvs(evs);clrForm();go('week');
+}
+function clrForm(){['fn','fc'].forEach(i=>document.getElementById(i).value='');document.getElementById('ft').value='16:00';document.getElementById('fd').value='0';document.getElementById('ftp').value='sport';}
+async function rmEv(id){if(currentUser.role==='child')return;if(confirm('להסיר?')){const evs=await getEvs();await setEvs(evs.filter(e=>e.id!==id));renderWeek();}}
+function clrNote(){document.getElementById('ni').value='';const r=document.getElementById('pr');r.style.display='none';r.innerHTML='';}
+
+const DM=[['שלישי',2],['שליש',2],["ג'",2],["ג׳",2],["יום ג",2],['רביעי',3],["ד'",3],["ד׳",3],["יום ד",3],['חמישי',4],["ה'",4],["ה׳",4],["יום ה",4],['שישי',5],["ו'",5],["ו׳",5],["יום ו",5],['שבת',6],['ראשון',0],['שני',1]];
+const TK={party:['יום הולדת','מסיבה','חגיגה'],sport:['כדורגל','כדורסל','שחייה','שחיה','קראטה','גימנסטיקה','טניס','כדורעף','ריצה'],hobby:['חוג','ציור','מוסיקה','גיטרה','פסנתר','מחול','בלט','שירה','תיאטרון'],playdate:['פלייד','חברים']};
+function gType(t){for(const[tp,kws]of Object.entries(TK))if(kws.some(k=>t.includes(k)))return tp;return'other';}
+
+async function parseIt(){
+  if(currentUser.role==='child')return;
+  const raw=document.getElementById('ni').value.trim();if(!raw)return;
+  const parsed=[];
+  raw.split('\n').map(l=>l.trim()).filter(Boolean).forEach(line=>{
+    let day=null;for(const[k,v]of DM){if(line.includes(k)){day=v;break;}}if(day===null)return;
+    let time='16:00';const tm=line.match(/(\d{1,2})[:.:](\d{2})/);
+    if(tm)time=`${tm[1].padStart(2,'0')}:${tm[2]}`;else if(line.includes('בוקר'))time='09:00';else if(line.includes('ערב'))time='19:00';
+    let child='';const cm=line.match(/[-–]\s*([א-ת][א-ת ]{1,10})\s*$/);if(cm)child=cm[1].trim();
+    let cl=line;for(const[k]of DM)cl=cl.replace(k,'');if(tm)cl=cl.replace(tm[0],'');if(cm)cl=cl.replace(cm[0],'');
+    cl=cl.replace(/[-–:,]/g,' ').replace(/\b(יום|בשעה|שעה|בוקר|ערב)\b/g,'').replace(/\s+/g,' ').trim();
+    parsed.push({id:nid++,name:cl||'פעילות',day,time,child,type:gType(line)});
+  });
+  const r=document.getElementById('pr');
+  if(!parsed.length){r.style.display='block';r.innerHTML=`<div class="empty"><i class="ti ti-alert-circle" style="font-size:26px;display:block;margin-bottom:8px"></i>לא זיהיתי ימים.</div>`;return;}
+  const bd=DAYS.map((d,i)=>({d,de:parsed.filter(e=>e.day===i)})).filter(x=>x.de.length);
+  r.style.display='block';
+  r.innerHTML=`<div style="font-size:13px;color:#aaa;font-weight:700;margin-bottom:10px"><i class="ti ti-check" style="color:#4CAF50"></i> זיהיתי ${parsed.length} פעילויות</div>`+
+  bd.map(({d,de})=>`<div class="db"><div class="dh"><div class="dot" style="background:${T[de[0].type].dot}"></div><span>${d}</span></div>${de.map(e=>{const t=T[e.type];return`<div class="er"><span class="etm">${e.time}</span><i class="ti ${t.icon}" style="font-size:14px;color:#ccc"></i><span class="enm">${e.name}${e.child?` <span style="color:#ccc">(${e.child})</span>`:''}</span><span class="ebadge" style="background:${t.bg};color:${t.col}">${t.label}</span></div>`;}).join('')}</div>`).join('')+
+  `<div class="arow" style="margin-top:10px"><button class="btn-p" id="aab"><i class="ti ti-calendar-plus"></i> הוסף הכל ללוז</button></div>`;
+  document.getElementById('aab').onclick=async()=>{const evs=await getEvs();parsed.forEach(e=>evs.push(e));await setEvs(evs);clrNote();go('week');};
+}
+
+// ── SHARE ──
+async function openShareModal(){
+  const ownerName=viewingChild||currentUser.username;
+  const res=await fetch('/api/share',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scheduleKey:schedKey(),ownerName})});
+  const data=await res.json();
+  currentShareCode=data.code;
+  document.getElementById('share-code-display').textContent=data.code;
+  document.getElementById('share-modal').classList.add('open');
+}
+function closeModal(){document.getElementById('share-modal').classList.remove('open');}
+function copyShareLink(){
+  const url=window.location.origin+'/?share='+currentShareCode;
+  navigator.clipboard.writeText(url).then(()=>showToast('✅ הקישור הועתק!'));
+  closeModal();
+}
+function shareWhatsapp(){
+  const url=window.location.origin+'/?share='+currentShareCode;
+  const ownerName=viewingChild||currentUser.username;
+  window.open('https://wa.me/?text='+encodeURIComponent('הנה הלוז של '+ownerName+': '+url));
+  closeModal();
+}
+
+// ── NOTIFICATIONS ──
+function startNotifCheck(){
+  if(Notification.permission==='default') Notification.requestPermission();
+  notifInterval=setInterval(checkNotifs,60000);
+  checkNotifs();
+}
+
+async function checkNotifs(){
+  const evs=await getEvs();
+  const now=new Date();
+  const dayIdx=now.getDay()===0?6:now.getDay()-1; // convert to Sun=0
+  // Actually Israeli week: Sun=0
+  const jsDay=now.getDay(); // 0=Sun
+  const appDay=jsDay; // our app: 0=ראשון=Sunday
+  const nowMins=now.getHours()*60+now.getMinutes();
+  evs.filter(e=>e.day===appDay).forEach(e=>{
+    const [h,m]=e.time.split(':').map(Number);
+    const evMins=h*60+m;
+    const diff=evMins-nowMins;
+    const key=e.id+'_'+e.time;
+    if(diff>0&&diff<=15&&!notifiedKeys.has(key)){
+      notifiedKeys.add(key);
+      triggerNotif(e.name,diff);
+    }
+  });
+}
+
+function triggerNotif(name,minsLeft){
+  // Sound
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [0,200,400].forEach(delay=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value=880;
+      osc.type='sine';
+      gain.gain.setValueAtTime(0.3,ctx.currentTime+delay/1000);
+      gain.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+delay/1000+0.3);
+      osc.start(ctx.currentTime+delay/1000);
+      osc.stop(ctx.currentTime+delay/1000+0.3);
+    });
+  }catch(e){}
+  // Toast
+  showToast('⏰ עוד '+minsLeft+' דקות: '+name);
+  // Browser notification
+  if(Notification.permission==='granted'){
+    new Notification('לוז המשחקים שלנו',{body:'עוד '+minsLeft+' דקות: '+name,icon:'/favicon.ico'});
+  }
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4000);
+}
+</script>
+</body>
+</html>
