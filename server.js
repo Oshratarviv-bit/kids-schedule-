@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname));
 
 const DB = path.join(__dirname, 'db.json');
 
